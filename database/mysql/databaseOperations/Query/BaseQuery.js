@@ -48,6 +48,8 @@ var BaseQuery = function(connect,fields,tableName){
 			me.conditions = "";
 		});
 	};
+
+	
 };
 
 module.exports = BaseQuery;

@@ -66,6 +66,7 @@ var Model = function(fields,tableName){
 		for(var element in fields){
 			this[element] = record[element];
 		}
+		this.save(callback);
 	};
 	
 

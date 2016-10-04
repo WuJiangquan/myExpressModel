@@ -18,7 +18,7 @@ connection.query(sql, function(err, results) {<br/>
 # 开始：
     1. 安装
         npm install --save my-express-model
-     2.使用：
+    2.使用：
         a. 在express项目的根目录下添加model文件夹，并添加一个所有数据表的父类，并在父类设置数据库配置。
        		我通常做法是添加一个名为BaseModel.js文件，然后文件中声明一个类，代码如下
 	         var Model = require("my-express-model");
@@ -29,7 +29,7 @@ connection.query(sql, function(err, results) {<br/>
 	         }
 	         module.exports = BaseModel;
        
-        b.配置
+        b. 配置
         	在a步骤require进来的config文件里面配置数据库的端口等参数：
 	        var isDebug = true;
 			var globaleConfig = {
@@ -45,5 +45,48 @@ connection.query(sql, function(err, results) {<br/>
 
 			module.exports = globaleConfig;
 
+		c. 在models层下面建立Model类，继承BaseModel,设置fields和该Model在数据库中对应的table名称，例如：
+			var BaseModel = require("./BaseModel");
 
-   
+			var Category = function() {
+
+			    BaseModel.call(this, Category.fields, "Category");
+			};
+
+			Category.fields = {
+			    id: {
+			        type: 'integer',
+			        validator: ['presence']
+			    },
+			    name: {
+			        type: 'string',
+			        validator: ['presence']
+			    },
+			    time: {
+			        type: 'datetime',
+			        validator: ['presence']
+			    }
+			};
+
+			module.exports = Category;
+
+    3. 在controller中使用Model
+		a. 新增纪录：
+			 /*当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在，满足两个否条件，则执行插入操作，否则执行更新操作*/
+       		 var CategoryModel = require("../../models/Category");
+       		 var categoryModel = new CategoryModel();
+			 categoryModel.set("id",0);
+			 categoryModel.set("name","JiangquanWu");
+			 categoryModel.set("time",new Date());
+			 categoryModel.save(function(err,result){
+				 //to do
+			 });
+
+		b. 修改纪录:
+			1). 跟新增纪录一样，修改一条记录。
+			2). 通过insert对象批量修改:
+				var categoryModel = new CategoryModel();
+				var insertOp = categoryModel.getOperateObj("insert");
+				insertOp.batchInsert(categories,function(err,result){
+					me.response(res,err,result);
+				});
