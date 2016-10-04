@@ -1,12 +1,12 @@
 {
-  "name": "mysql-module",
+  "name": "express-model",
   "version": "1.0.0",
-  "description": "mysql model层",
+  "description": "为 express 封装的 model 层",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "JiangquanWu",
   "license": "ISC",
   "dependencies": {
     "mysql": "^2.11.1"
