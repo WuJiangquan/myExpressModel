@@ -1,7 +1,7 @@
 var db = require('./database');
-var config = require("../../config/databaseConfig");
-var dataBaseEngine = db.getDataBaseEngine(config);
+
 var Model = function(fields,tableName){
+	var dataBaseEngine = db.getDataBaseEngine(this.config);
 	this.fields = fields;
 	this.tableName = tableName;
 	var me = this;

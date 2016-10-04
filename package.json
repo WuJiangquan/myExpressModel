@@ -1,5 +1,5 @@
 {
-  "name": "express-model",
+  "name": "my-express-model",
   "version": "1.0.0",
   "description": "为 express 封装的 model 层",
   "main": "index.js",
@@ -15,7 +15,7 @@
     "model",
     "mysql"
   ],
-  "author": "JiangquanWu",
+  "author": "wujiangquan",
   "license": "ISC",
   "dependencies": {
     "mysql": "^2.11.1"
