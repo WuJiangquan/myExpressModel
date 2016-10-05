@@ -70,18 +70,19 @@ connection.query(sql, function(err, results) {<br/>
 
 			module.exports = Category;
 
-    3. 在controller中使用Model
-		a. 1.新增一条纪录：
-			 /*当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在，满足两个否条件，则执行插入操作，否则执行更新操作*/
-       		 var CategoryModel = require("../../models/Category");
-       		 var categoryModel = new CategoryModel();
-			 categoryModel.set("id",0);
-			 categoryModel.set("name","JiangquanWu");
-			 categoryModel.set("time",new Date());
-			 categoryModel.save(function(err,result){
-				 //to do
-			 });
-			2. 通过insert对象批量新增
+#在controller中使用Model
+		a. 添加记录
+			1).新增一条纪录：
+				 /*当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在，满足两个否条件，则执行插入操作，否则执行更新操作*/
+	       		 var CategoryModel = require("../../models/Category");
+	       		 var categoryModel = new CategoryModel();
+				 categoryModel.set("id",0);
+				 categoryModel.set("name","JiangquanWu");
+				 categoryModel.set("time",new Date());
+				 categoryModel.save(function(err,result){
+					 //to do
+				 });
+			2). 通过insert对象批量新增
 				var categoryModel = new CategoryModel();
 				var insertOp = categoryModel.getOperateObj("insert");
 				insertOp.batchInsert(categories,function(err,result){
@@ -139,22 +140,22 @@ connection.query(sql, function(err, results) {<br/>
 				var categoryModel = new CategoryModel();
 				var deleteOp = deleteByIds.getOperateObj("delete");
 				deleteOp.deleteAllById(callback);
-	4. 条件设置。
-		上面的删查改都可能要设置复杂的条件，下面就是上面方法中的通过model对象的getOperateObj方法获取的数据库操作对象可以执行的设置复杂条件的方法：
-		说明，每个方法最后都有一个logic参数，是用来设置数据库语句中条件之间的与或逻辑的.如果是或，参数值设置"or"。如果是与，参数值为"and"。缺省值为and.
-		a. equalTo(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名等于某值
-		b. notEqualTo(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名不等于某值
-		c. lessThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名小于某值
-		d. moreThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名大于某值
-		e. notLessThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名大于等于某值
-		f. notMoreThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名小于等于某值
-		g. between(fieldName,startValue,endvalue,logic)//参数1是字段名，参数2和参数3是字段值的开区间(不包含开始值和结束值)，
-		h. like(fieldName,charList)//模糊查询。参数1字段名，参数2.模糊值
-		i. likeStartAs(fieldName,charList)//以某值开头的模糊查询。参数1字段名，参数2.模糊值
-		j. likeEndWidth(fieldName,charList);//以某值结束的模糊查询。参数1字段名，参数2.模糊值
-		k. in(fieldName,valueArray,logic) //查找某只段在valueArray数组的所有记录.参数1字段名，参数2.字段的值数组
-		//查找操作还有下面这些特殊的条件设置方法：
-		a. skip(count); //跳过前count条查询，参数count是跳过条数的数值
-		b. limit(count); //限制查询的条数， 参数count是查询条数的数值
-		c. ascending(fieldName); //查询结果根据某字段升序排列. 参数fieldName是字段名
-		d. descending(fieldName); //查询结果根据某字段降序排列。参数fieldName是字段名
+#条件设置
+	上面的删查改都可能要设置复杂的条件，下面就是上面方法中的通过model对象的getOperateObj方法获取的数据库操作对象可以执行的设置复杂条件的方法：
+	说明，每个方法最后都有一个logic参数，是用来设置数据库语句中条件之间的与或逻辑的.如果是或，参数值设置"or"。如果是与，参数值为"and"。缺省值为and.
+	a. equalTo(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名等于某值
+	b. notEqualTo(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名不等于某值
+	c. lessThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名小于某值
+	d. moreThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名大于某值
+	e. notLessThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名大于等于某值
+	f. notMoreThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名小于等于某值
+	g. between(fieldName,startValue,endvalue,logic)//参数1是字段名，参数2和参数3是字段值的开区间(不包含开始值和结束值)，
+	h. like(fieldName,charList)//模糊查询。参数1字段名，参数2.模糊值
+	i. likeStartAs(fieldName,charList)//以某值开头的模糊查询。参数1字段名，参数2.模糊值
+	j. likeEndWidth(fieldName,charList);//以某值结束的模糊查询。参数1字段名，参数2.模糊值
+	k. in(fieldName,valueArray,logic) //查找某只段在valueArray数组的所有记录.参数1字段名，参数2.字段的值数组
+	//查找操作还有下面这些特殊的条件设置方法：
+	a. skip(count); //跳过前count条查询，参数count是跳过条数的数值
+	b. limit(count); //限制查询的条数， 参数count是查询条数的数值
+	c. ascending(fieldName); //查询结果根据某字段升序排列. 参数fieldName是字段名
+	d. descending(fieldName); //查询结果根据某字段降序排列。参数fieldName是字段名
