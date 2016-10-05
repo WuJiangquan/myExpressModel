@@ -125,6 +125,10 @@ var Model = function(fields,tableName){
 	}
 	
 	this.get = function(parameterStr,callback){
+		if(("string" != typeof parameterStr) && ("function" == typeof parameterStr)){
+			this.getAll(parameterStr);
+			return ;
+		}
 		var queryObj = me.getOperateObj("query");
 		var maps = parseParameterStr(parameterStr);
 		for(var i = 0,len = maps.length;i<len;i++){

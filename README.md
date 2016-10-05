@@ -71,7 +71,7 @@ connection.query(sql, function(err, results) {<br/>
 			module.exports = Category;
 
     3. 在controller中使用Model
-		a. 新增纪录：
+		a. 1.新增一条纪录：
 			 /*当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在，满足两个否条件，则执行插入操作，否则执行更新操作*/
        		 var CategoryModel = require("../../models/Category");
        		 var categoryModel = new CategoryModel();
@@ -81,12 +81,80 @@ connection.query(sql, function(err, results) {<br/>
 			 categoryModel.save(function(err,result){
 				 //to do
 			 });
-
-		b. 修改纪录:
-			1). 跟新增纪录一样，修改一条记录。
-			2). 通过insert对象批量修改:
+			2. 通过insert对象批量新增
 				var categoryModel = new CategoryModel();
 				var insertOp = categoryModel.getOperateObj("insert");
 				insertOp.batchInsert(categories,function(err,result){
-					me.response(res,err,result);
+					 //to do
 				});
+
+		b. 修改纪录:
+			1). 跟新增纪录一样，修改一条记录。
+			2). 通过update对象根据条件更新:
+				//修改所有品类名称为“衣服”的时间
+				var categoryModel = new CategoryModel();
+				categoryModel.set("time",new Date());
+				var updateOp = categoryModel.getOperateObj("update");
+				updateOp.equalTo("name","衣服");
+				updateOp.updateRecord(categoryModel,function(err,result){
+					 //to do
+				});
+			3). 批量更新多条记录。
+				var categoryModel = new CategoryModel();
+				var updateOp = categoryModel.getOperateObj("update");
+				//@parameter categories 是一个categoryModel数组，所有categoryModel都必须有id属性；
+				updateOp.batchUpdateById(categories,function(err,result){
+					//to do
+				});
+		c. 查找：
+		    1). 通过model对象简单的查找，比如查找id等于1的品类：
+		    	var categoryModel = new CategoryModel();
+		    	categoryModel.get("id=1",callback);
+		    2). 通过model对象获取所有的记录(方法1如果只传入一个回调函数作为参数，也可以获取所有记录):
+		    	var categoryModel = new CategoryModel();
+		    	categoryModel.getAll(callback);
+		    3). 复杂的条件查询，比如：
+		    	var categoryModel = new CategoryModel();
+		    	var queryObj = categoryModel.getOperateObj("query");
+				queryObj.limit(pageSize);//分页；
+				queryObj.skip((pageNumber-1)*pageSize);//跳过前几条；
+				queryObj.descending("time");//根据时间降序；
+				queryObj.notMoreThan("time",time);//查找所有time时间点之前添加的品类
+				queryObj.find(callback);
+			4). 连接查询因为尚未经过项目检验，所以暂未开放接口。如果要进行连接查询，只能通过model对象的 opSqlSetament 方法进行：
+				var categoryModel = new CategoryModel();
+				var sql = "连接查询语句";
+				categoryModel.opSqlSetament(sql,callback);
+		d. 删除:
+			1). 通过model对象简单地根据id条件删除:
+				var categoryModel = new CategoryModel();
+				categoryModel.deleteByIds(1,callback);
+				//categoryModel.deleteByIds([1,2,3,4,5,6,7,8],callback);
+			2). 通过delete对象执行复杂的条件判断删除：
+				var categoryModel = new CategoryModel();
+				var deleteOp = deleteByIds.getOperateObj("delete");
+				deleteOp.equalTo("name",'衣服');//更多的条件设置方法请看后面文档;
+				deleteOp.delete(cllback);
+			3). 通过delete对象删除所有记录
+				var categoryModel = new CategoryModel();
+				var deleteOp = deleteByIds.getOperateObj("delete");
+				deleteOp.deleteAllById(callback);
+	4. 条件设置。
+		上面的删查改都可能要设置复杂的条件，下面就是上面方法中的通过model对象的getOperateObj方法获取的数据库操作对象可以执行的设置复杂条件的方法：
+		说明，每个方法最后都有一个logic参数，是用来设置数据库语句中条件之间的与或逻辑的.如果是或，参数值设置"or"。如果是与，参数值为"and"。缺省值为and.
+		a. equalTo(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名等于某值
+		b. notEqualTo(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名不等于某值
+		c. lessThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名小于某值
+		d. moreThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名大于某值
+		e. notLessThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名大于等于某值
+		f. notMoreThan(fieldName,value,logic)//参数1.是字段名，参数2是 字段值。字段名小于等于某值
+		g. between(fieldName,startValue,endvalue,logic)//参数1是字段名，参数2和参数3是字段值的开区间(不包含开始值和结束值)，
+		h. like(fieldName,charList)//模糊查询。参数1字段名，参数2.模糊值
+		i. likeStartAs(fieldName,charList)//以某值开头的模糊查询。参数1字段名，参数2.模糊值
+		j. likeEndWidth(fieldName,charList);//以某值结束的模糊查询。参数1字段名，参数2.模糊值
+		k. in(fieldName,valueArray,logic) //查找某只段在valueArray数组的所有记录.参数1字段名，参数2.字段的值数组
+		//查找操作还有下面这些特殊的条件设置方法：
+		a. skip(count); //跳过前count条查询，参数count是跳过条数的数值
+		b. limit(count); //限制查询的条数， 参数count是查询条数的数值
+		c. ascending(fieldName); //查询结果根据某字段升序排列. 参数fieldName是字段名
+		d. descending(fieldName); //查询结果根据某字段降序排列。参数fieldName是字段名

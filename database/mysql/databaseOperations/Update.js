@@ -47,8 +47,9 @@ var Update = function(connect , fields , tableName){
 	this.dataBaseUpdateSetCollector = function(record){
 		var set = '';
 		for(var element in record){//浅度操作，如果record的数据中某个数据是一个对象则需要进一步完善；
-			if(element != 'id'){
-				set += " " + fields[element].mapping + " = " + this.formatBataBaseSet(record[element],fields[element]) + " ,";
+			var field = fields[element];
+			if(element != 'id' && field){
+				set += " " + field.mapping + " = " + this.formatBataBaseSet(record[element],field) + " ,";
 			}
 		}
 		return  set.slice(0,-1) ;
