@@ -154,7 +154,7 @@ connection.query(sql, function(err, results) {<br/>
 	i. likeStartAs(fieldName,charList)//以某值开头的模糊查询。参数1字段名，参数2.模糊值
 	j. likeEndWidth(fieldName,charList);//以某值结束的模糊查询。参数1字段名，参数2.模糊值
 	k. in(fieldName,valueArray,logic) //查找某只段在valueArray数组的所有记录.参数1字段名，参数2.字段的值数组
-	//查找操作还有下面这些特殊的条件设置方法：
+#查找操作还有下面这些特殊的条件设置方法：
 	a. skip(count); //跳过前count条查询，参数count是跳过条数的数值
 	b. limit(count); //限制查询的条数， 参数count是查询条数的数值
 	c. ascending(fieldName); //查询结果根据某字段升序排列. 参数fieldName是字段名
