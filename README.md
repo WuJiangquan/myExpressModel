@@ -22,7 +22,7 @@ connection.query(sql, function(err, results) {<br/>
         a. 在express项目的根目录下添加model文件夹，并添加一个所有数据表的父类，并在父类设置数据库配置。
        		我通常做法是添加一个名为BaseModel.js文件，然后文件中声明一个类，代码如下
 	         var Model = require("my-express-model");
-	         var config = require("../config/globalConfig");
+	         var config = require("../config/databaseConfig");
 	         var BaseModel = function(fiedls,tableName){
 	            this.config = config.databaseConfig;
 	            Model.call(this,fields,tableName);
@@ -31,19 +31,13 @@ connection.query(sql, function(err, results) {<br/>
        
         b. 配置
         	在a步骤require进来的config文件里面配置数据库的端口等参数：
-	        var isDebug = true;
-			var globaleConfig = {
-				database :{
-					host : 'localhost',
-					user : 'root',
-					password : 'password',
-					databaseName : 'mydatabasename'
-				},
-				appViewUrl  : isDebug ? "app/dev/" : "app/dist/",
-				port : 3001
-			};
-
-			module.exports = globaleConfig;
+	        module.exports = {
+				engin : "mysql",//开发中使用的数据库引擎，如果要更换数据库，修改配置即可(让然目前只提供mysql数据库)
+				host : 'localhost',
+				user : 'root',
+				password : 'password',
+				databaseName : 'databaseName'
+			}
 
 		c. 在models层下面建立Model类，继承BaseModel,设置fields和该Model在数据库中对应的table名称，例如：
 			var BaseModel = require("./BaseModel");
@@ -73,7 +67,8 @@ connection.query(sql, function(err, results) {<br/>
 #在controller中使用Model
 		a. 添加记录
 			1).新增一条纪录：
-				 /*当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在，满足两个否条件，则执行插入操作，否则执行更新操作*/
+				 /*当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在，满足两个否条件，
+				 则执行插入操作，否则执行更新操作*/
 	       		 var CategoryModel = require("../../models/Category");
 	       		 var categoryModel = new CategoryModel();
 				 categoryModel.set("id",0);
@@ -159,3 +154,5 @@ connection.query(sql, function(err, results) {<br/>
 	b. limit(count); //限制查询的条数， 参数count是查询条数的数值
 	c. ascending(fieldName); //查询结果根据某字段升序排列. 参数fieldName是字段名
 	d. descending(fieldName); //查询结果根据某字段降序排列。参数fieldName是字段名
+
+	
