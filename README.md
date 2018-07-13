@@ -192,6 +192,7 @@ deleteOp.deleteAllById(callback);
 限制查询的条数， 参数count是查询条数的数值
 ### ascending(fieldName);
 查询结果根据某字段升序排列. 参数fieldName是字段名
-### descending(fieldName); 查询结果根据某字段降序排列。参数fieldName是字段名
+### descending(fieldName);
+查询结果根据某字段降序排列。参数fieldName是字段名
 
 	
