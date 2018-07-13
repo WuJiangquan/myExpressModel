@@ -3,7 +3,7 @@
 ## 1. 安装
         npm install --save my-express-model
 ## 2.使用：
-### a. 在express项目的根目录下添加model文件夹，并添加一个所有数据表的父类，并在父类设置数据库配置。
+###  在express项目的根目录下添加model文件夹，并添加一个所有数据表的父类，并在父类设置数据库配置。
 通常做法是添加一个名为BaseModel.js文件，然后文件中声明一个类，代码如下
 	         
 ```
@@ -15,7 +15,7 @@ var BaseModel = function(fiedls,tableName){
 }
 module.exports = BaseModel;
 ```
-### b. 配置
+###  配置
 在a步骤require进来的config文件里面配置数据库的端等参数：
 
 ```
@@ -27,7 +27,7 @@ module.exports = BaseModel;
 	databaseName : 'databaseName'
 }
 ```
-### c. 在models层下面建立Model类，继承BaseModel,设置fields和该Model在数据库中对应的table名称，例如：
+###  在models层下面建立Model类，继承BaseModel,设置fields和该Model在数据库中对应的table名称，例如：
 
 ```
 var BaseModel = require("./BaseModel");
@@ -54,7 +54,7 @@ module.exports = Category;
 
 
 # 在controller中使用Model
-## a. 添加记录
+##  添加记录
 ### 1).新增一条纪录：
 当Model 对象执行save操作的时候，会判断是id属性是否为空或者该id在数据库是否已经存在。
 满足两个否条件，则执行插入操作，否则执行更新操作
@@ -77,7 +77,7 @@ insertOp.batchInsert(categories,function(err,result){
 	 //to do
 });
 ```
-## b. 修改纪录:
+##  修改纪录:
 ### 1). 跟新增纪录一样，修改一条记录。
 ### 2). 通过update对象根据条件更新:
 
@@ -101,7 +101,7 @@ updateOp.batchUpdateById(categories,function(err,result){
 	//to do
 });
 ```
-## c. 查找：
+##  查找：
 ### 1). 通过model对象简单的查找，
 比如查找id等于1的品类：
 
@@ -136,7 +136,7 @@ var categoryModel = new CategoryModel();
 var sql = "连接查询语句";
 categoryModel.opSqlSetament(sql,callback);
 ```
-## d. 删除:
+##  删除:
 ### 1). 通过model对象简单地根据id条件删除:
 
 ```
