@@ -65,19 +65,29 @@ class Model{
 		this.save(callback);
 	}
 	set(fieldName,val){
+		if(arguments.length  === 1 && "object" === typeof fieldName){
+			for(var pro in fieldName){
+				this[pro] = fieldName[pro];
+			}
+		}
 		this[fieldName] = val;
 	}
 	save(callback){
+		if(arguments.length>1&&"object" === typeof callback){
+			var obj = callback;
+			callback = arguments[1];
+			this.set(callback)
+		}
 		var record = this.collectRecord();
 		if(record.id){
-			this.get("id = "+record.id,function(err,results){
+			this.get("id = "+record.id,(err,results)=>{
 				if(err){
 					callback(err,results);
 				}else{
 					if(results.length>0){
-						me.updateRecord(record, callback);
+						this.updateRecord(record, callback);
 					}else{
-						me.insertRecord(recordRecord,callback);
+						this.insertRecord(record,callback);
 					}
 				}
 			});
@@ -99,8 +109,8 @@ class Model{
 	}
 
 	parseParameterStr (parametersStr){
-		if("object" !== typeof parametersStr){
-			return parametersStr;
+		if("undefined" === parametersStr){
+			throw new Error("parametersStr is undeifned");
 		}
 		parametersStr = parametersStr.replace(/\s/g,"");
 		var mappingParametersStr = "";

@@ -7,6 +7,12 @@ module.exports = function (config){
 		password : config.password,
 		database : config.databaseName
 	});
-	connection.connect();
+	connection.connect(function(err) {
+        if (!err) {
+            console.log("mysql connected")
+        } else {
+            console.log("mysql connection lost");
+        }
+    });
 	return connection;
 };

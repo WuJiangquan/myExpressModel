@@ -1,6 +1,6 @@
 {
   "name": "my-express-model",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "为 express 封装的 model 层",
   "main": "index.js",
   "scripts": {
