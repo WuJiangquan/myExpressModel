@@ -1,44 +1,44 @@
 var db = require('./database');
-
-var Model = function(fields,tableName){
-	var dataBaseEngine = db.getDataBaseEngine(this.config);
-	this.fields = fields;
-	this.tableName = tableName;
-	var me = this;
-	this.pageNumber = 0;
-	this.pageSize = 30;
-	var initFields = function (){
-		for(element in me.fields){
-			me.fields[element].mapping = me.fields[element].mapping || element;
+var dataBaseEngine = null;
+class Model{
+	constuctor(fields,tableName,databaseConfig){
+		var me = this;
+		this.databaseConfig = databaseConfig;
+		this.fields = fields;
+		this.tableName = tableName;
+		this.pageNumber = 0;
+		this.pageSize = 30;
+		dataBaseEngine = db.getDataBaseEngine(this.databaseConfig);
+		this.initFields();
+	}
+	initFields  (){
+		for(element in this.fields){
+			this.fields[element].mapping = this.fields[element].mapping || element;
 		}
 	}
-	
-	var domapping = function(record){
-		var fields = me.fields;
+	domapping (record){
 		var newRecord = {};
-		for(var element in fields){
-			var data = record[fields[element].mapping||element];
+		for(var element in this.fields){
+			var data = record[this.fields[element].mapping||element];
 			if(undefined === data){
-				var errorMsg =  this.tableName + '返回的数据不包含' + fields[element].mapping  + '或' + element + '字段'; 
-				console.log(errorMsg);
+				var errorMsg =  this.tableName + '返回的数据不包含' + this.fields[element].mapping  + '或' + element + '字段'; 
 				throw error(errorMsg);
 			}
-			record[element.name] = data;
+			newRecord[element.name] = data;
 		}
+		return newRecord;
 	}
-	
-	var mapRecord = function(record){
-		var fields = me.fields;
+	mapRecord(record){
 		var newRecord = {};
-		for(var element in fields){
-			var mapping = fields[element].mapping || element;
+		for(var element in this.fields){
+			var mapping = this.fields[element].mapping || element;
 			if(record[element])
 				newRecord[mapping] = record[element] || "";
 		}
 		return newRecord;
 	}
-	
-	var formatValueString  = function(field,value){
+
+	formatValueString  (field,value){
 		var type = field.type;
 		var newVlue = '';
 		switch(type){
@@ -48,34 +48,27 @@ var Model = function(fields,tableName){
 		
 		return newVlue;
 	}
-	
-	var collectRecord = function(){
-		var fields = me.fields;
+	collectRecord (){
 		var record = {};
-		for(var element in fields){
-			record[element] = me[element];
+		for(var element in this.fields){
+			record[element] = this[element];
 		}
 		return record;
 	}
-	
-	this.addNewRecord = function(record , callback){
-		var fields = me.fields;
+	addNewRecord(record , callback){
 		if("string" == typeof record){
 			record = parseParameterStr(record);
 		}
-		for(var element in fields){
+		for(var element in this.fields){
 			this[element] = record[element];
 		}
 		this.save(callback);
-	};
-	
-
-	this.set = function(fieldName,val){
+	}
+	set(fieldName,val){
 		this[fieldName] = val;
 	}
-	
-	this.save = function(callback){
-		var record = collectRecord();
+	save(callback){
+		var record = this.collectRecord();
 		if(record.id){
 			this.get("id = "+record.id,function(err,results){
 				if(err){
@@ -89,33 +82,31 @@ var Model = function(fields,tableName){
 				}
 			});
 		}else{
-			me.insertRecord(record,callback);
+			this.insertRecord(record,callback);
 		}
 	}
-	
-	this.insertRecord = function(record,callback){
+
+	insertRecord (record,callback){
 		var mappingRecord = mapRecord(record);
-		var insertObj = me.getOperateObj("insert");
+		var insertObj = this.getOperateObj("insert");
 		insertObj.insert(mappingRecord,callback)
 	}
-	
-	this.updateRecord = function(record,callback){
+
+	updateRecord (record,callback){
 		var mappingRecord = mapRecord(record);
-		var updateObj = me.getOperateObj("update");
+		var updateObj = this.getOperateObj("update");
 		updateObj.updateRecord(mappingRecord,callback);
 	}
-	
-	
-	var parseParameterStr = function(parametersStr){
+
+	parseParameterStr (parametersStr){
 		parametersStr = parametersStr.replace(/\s/g,"");
-		var fields = me.fields;
 		var mappingParametersStr = "";
 		var parametersStrs = parametersStr.split(";");
 		var maps = [];
 		for(var i =0,len = parametersStrs.length;i<len;i++){
 			var parameters = parametersStrs[i].split("=");
 			var map = {
-				key : fields[parameters[0]].mapping || parameters[0],
+				key : this.fields[parameters[0]].mapping || parameters[0],
 				val : parameters[1]
 			};
 			maps.push(map);
@@ -123,46 +114,44 @@ var Model = function(fields,tableName){
 		return maps;
 		
 	}
-	
-	this.get = function(parameterStr,callback){
+
+	get (parameterStr,callback){
 		if(("string" != typeof parameterStr) && ("function" == typeof parameterStr)){
 			this.getAll(parameterStr);
 			return ;
 		}
-		var queryObj = me.getOperateObj("query");
+		var queryObj = this.getOperateObj("query");
 		var maps = parseParameterStr(parameterStr);
 		for(var i = 0,len = maps.length;i<len;i++){
 			queryObj.equalTo(maps[i].key,maps[i].val);
 		}
 		queryObj.find(callback);
 	}
-	
-	this.getAll = function(callback){
-		var queryObj = me.getOperateObj("query");
+
+	getAll (callback){
+		var queryObj = this.getOperateObj("query");
 		queryObj.find(callback);
 	}
 	
-	
-	this.deleteByIds = function(ids,callback){
+	deleteByIds (ids,callback){
 		if(!isNaN(ids)){
 			var idArray = new Array();
 			idArray.push(ids);
 			ids = idArray;
 		}
-		var deleteObj = me.getOperateObj("delete");
+		var deleteObj = this.getOperateObj("delete");
 		deleteObj.deleteInBatchByIds(ids,callback);
 	}
-	
-	this.deleteAll = function(){
-		
+
+	deleteAll(){
+
 	}
-	
-	this.getOperateObj = function(operateType){
+
+	getOperateObj (operateType){
 		return dataBaseEngine.getOperations(operateType,this.fields,this.tableName);
 	}
-	
-	this.parseDataStr = function(dataStr){
-		var fields = me.fields;
+
+	parseDataStr (dataStr){
 		if("string" != typeof dataStr){
 			throw new Error("dataStr must be a string")
 		}else{
@@ -171,29 +160,33 @@ var Model = function(fields,tableName){
 				var strArray = strs[i].split("=");
 				var key = strArray[0];
 				var value = strArray[1];
-				if(fields[key]){
+				if(this.fields[key]){
 					this[key] = value;
 				}
 			}
 		}
 	}
-	
-	this.opSqlSetament = function(sql,callBack){
+
+	setPageSize (pageSize){
+		this.pageSize = pageSize;
+	}
+
+	setPageNumber = function(pageNumber){
+		this.pageNumber = pageNumber;
+	}
+
+	init (){
+
+	}
+
+	opSqlSetament = function(sql,callBack){
 		db.baseOp(sql,callBack||function(){});
 	};
 	
-	this.setPageNumber = function(pageNumber){
-		me.pageNumber = pageNumber;
-	}
-	
-	this.setPageSize = function(pageSize){
-		me.pageSize = pageSize;
-	}
-	
-	function init(){
-		initFields();
-	};
-	init();
 }
+
+
+	
+	
 
 module.exports = Model;
