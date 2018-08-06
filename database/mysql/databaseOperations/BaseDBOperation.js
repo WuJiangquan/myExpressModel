@@ -14,7 +14,7 @@ var BaseDBOperation =function(connect,fields,tableName){
 	}
 	
 	if(!tableName){
-		throw new Error("you must set  parameter tableName when you new a database operation object");
+		throw new Error("you must set  pafieldsCollectorrameter tableName when you new a database operation object");
 	}
 	
 	this.fields = fields;
@@ -141,7 +141,9 @@ var BaseDBOperation =function(connect,fields,tableName){
 	this.fieldsCollector = function(record){
 		var fieldsstr = "";
 		for(var element in record){
-			fieldsstr += fields[element].mapping + ',';
+			if(!fields[element].generated){
+				fieldsstr += fields[element].mapping + ',';
+			}
 		}
 		return  fieldsstr.slice(0,-1) ;
 	};
