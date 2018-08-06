@@ -37,6 +37,7 @@ var Category = function() {
 Category.fields = {
     id: {
         type: 'integer',
+         generated : true, // 自增字段，插入时跳过该字段
         validator: ['presence']
     },
     name: {
