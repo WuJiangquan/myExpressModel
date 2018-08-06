@@ -12,7 +12,7 @@ class Model{
 		this.initFields();
 	}
 	initFields  (){
-		for(element in this.fields){
+		for(var element in this.fields){
 			this.fields[element].mapping = this.fields[element].mapping || element;
 		}
 	}
@@ -87,18 +87,21 @@ class Model{
 	}
 
 	insertRecord (record,callback){
-		var mappingRecord = mapRecord(record);
+		var mappingRecord = this.mapRecord(record);
 		var insertObj = this.getOperateObj("insert");
 		insertObj.insert(mappingRecord,callback)
 	}
 
 	updateRecord (record,callback){
-		var mappingRecord = mapRecord(record);
+		var mappingRecord = this.mapRecord(record);
 		var updateObj = this.getOperateObj("update");
 		updateObj.updateRecord(mappingRecord,callback);
 	}
 
 	parseParameterStr (parametersStr){
+		if("object" !== typeof parametersStr){
+			return parametersStr;
+		}
 		parametersStr = parametersStr.replace(/\s/g,"");
 		var mappingParametersStr = "";
 		var parametersStrs = parametersStr.split(";");
@@ -115,13 +118,17 @@ class Model{
 		
 	}
 
-	get (parameterStr,callback){
-		if(("string" != typeof parameterStr) && ("function" == typeof parameterStr)){
-			this.getAll(parameterStr);
+	get (condition,callback){
+		if(undefined === condition){
+			throw new Error("get needs condition parameter")
+		}
+		if(("string" != typeof condition) && ("function" == typeof condition)){
+			callback = condition;
+			this.getAll(callback);
 			return ;
 		}
 		var queryObj = this.getOperateObj("query");
-		var maps = parseParameterStr(parameterStr);
+		var maps = this.parseParameterStr(condition);
 		for(var i = 0,len = maps.length;i<len;i++){
 			queryObj.equalTo(maps[i].key,maps[i].val);
 		}
