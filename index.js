@@ -1,7 +1,7 @@
 var db = require('./database');
 var dataBaseEngine = null;
 class Model{
-	constuctor(fields,tableName,databaseConfig){
+	constructor(fields,tableName,databaseConfig){
 		var me = this;
 		this.databaseConfig = databaseConfig;
 		this.fields = fields;
@@ -171,7 +171,7 @@ class Model{
 		this.pageSize = pageSize;
 	}
 
-	setPageNumber = function(pageNumber){
+	setPageNumber (pageNumber){
 		this.pageNumber = pageNumber;
 	}
 
@@ -179,7 +179,7 @@ class Model{
 
 	}
 
-	opSqlSetament = function(sql,callBack){
+	opSqlSetament (sql,callBack){
 		db.baseOp(sql,callBack||function(){});
 	};
 	
