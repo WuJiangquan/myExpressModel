@@ -25,7 +25,7 @@ var Insert = function(connect , fields , tableName){
 	this.dataBaseInsertSetCollector = function(fields , record){
 		var set = "";
 		for(var element in record){//浅度操作，如果record的数据中某个数据是一个对象则需要进一步完善；
-			if(!record[element].generated)
+			if(!fields[element].generated)
 				set += ' ' + this.formatBataBaseSet(record[element],fields[element]) + " ,";
 		}
 		return  set.slice(0,-1) ;
