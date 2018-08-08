@@ -8,11 +8,13 @@
 	         
 ```
 var Model = require("my-express-model");
-var config = require("../config/databaseConfig");
-var BaseModel = function(fiedls,tableName){
-    this.config = config.databaseConfig;
-    Model.call(this,fields,tableName);
+var databaseConfig = require("../config/databaseConfig");
+class BaseModel extends Model{
+    constructor(){
+        super(databaseConfig);
+    }
 }
+
 module.exports = BaseModel;
 ```
 ###  配置
