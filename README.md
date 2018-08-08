@@ -31,12 +31,16 @@ module.exports = BaseModel;
 
 ```
 var BaseModel = require("./BaseModel");
-var Category = function() {
-    BaseModel.call(this, Category.fields, "Category");
+class CategoryModel  extends BaseModel{
+    constructor(){
+        super();
+    }
 };
-Category.fields = {
+CategoryModel.tableName = "FbUser";
+CategoryModel.fields = {
     id: {
         type: 'integer',
+         pk : true, // primary key 主键，当不设置任何条件的时候则按主键的值进行更新
          generated : true, // 自增字段，插入时跳过该字段
         validator: ['presence']
     },
@@ -44,13 +48,13 @@ Category.fields = {
         type: 'string',
         validator: ['presence']
     },
-    time: {
-        type: 'datetime',
+    avatar: {
+        type: 'string',
         validator: ['presence']
     }
 };
 
-module.exports = Category;
+module.exports = CategoryModel;
 ```
 
 
@@ -69,11 +73,22 @@ var categoryModel = new CategoryModel();
 	 //to do
  });
 ```
+```
+var CategoryModel = require("../../models/Category");
+CategoryModel.insertRecord({
+    id : 0,
+    name : "JiangquanWu",
+    time : new Date()
+})
+.then((errmsg,result)=>{
+
+})
+```
+
 ###  2). 通过insert对象批量新增
 
 ```
-var categoryModel = new CategoryModel();
-var insertOp = categoryModel.getOperateObj("insert");
+var insertOp = CategoryModel.getOperateObj("insert");
 insertOp.batchInsert(categories,function(err,result){
 	 //to do
 });
@@ -86,7 +101,7 @@ insertOp.batchInsert(categories,function(err,result){
 //修改所有品类名称为“衣服”的时间
 var categoryModel = new CategoryModel();
 categoryModel.set("time",new Date());
-var updateOp = categoryModel.getOperateObj("update");
+var updateOp = CategoryModel.getOperateObj("update");
 updateOp.equalTo("name","衣服");
 updateOp.updateRecord(categoryModel,function(err,result){
 	 //to do
@@ -107,21 +122,18 @@ updateOp.batchUpdateById(categories,function(err,result){
 比如查找id等于1的品类：
 
 ```
-var categoryModel = new CategoryModel();
-categoryModel.get("id=1",callback);
-//categoryModel.get(callback);则返回所有记录
+CategoryModel.get("id=1",callback);
+//CategoryModel.get(callback);则返回所有记录
 ```
 ### 2). 通过model对象获取所有的记录(方法1如果只传入一个回调函数作为参数，也可以获取所有记录)
 
 ```
-var categoryModel = new CategoryModel();
-categoryModel.getAll(callback);
+CategoryModel.getAll(callback);
 ```
 ### 3). 复杂的条件查询，比如：
 
 ```
-var categoryModel = new CategoryModel();
-var queryObj = categoryModel.getOperateObj("query");
+var queryObj = CategoryModel.getOperateObj("query");
 queryObj.limit(pageSize);//分页；
 queryObj.skip((pageNumber-1)*pageSize);//跳过前几条；
 queryObj.descending("time");//根据时间降序；
@@ -133,32 +145,28 @@ queryObj.find(callback);
 通过model对象的 opSqlSetament 方法进行
 
 ```
-var categoryModel = new CategoryModel();
 var sql = "连接查询语句";
-categoryModel.opSqlSetament(sql,callback);
+CategoryModel.opSqlSetament(sql,callback);
 ```
 ##  删除:
 ### 1). 通过model对象简单地根据id条件删除:
 
 ```
-var categoryModel = new CategoryModel();
-categoryModel.deleteByIds(1,callback);
-//categoryModel.deleteByIds([1,2,3,4,5,6,7,8],callback);
+CategoryModel.deleteByIds(1,callback);
+//CategoryModel.deleteByIds([1,2,3,4,5,6,7,8],callback);
 ```
 
 ### 2). 通过delete对象执行复杂的条件判断删除：
 
 ```
-var categoryModel = new CategoryModel();
-var deleteOp = categoryModel.getOperateObj("delete");
+var deleteOp = CategoryModel.getOperateObj("delete");
 deleteOp.equalTo("name",'衣服');//更多的条件设置方法请看后面文档;
 deleteOp.delete(cllback);
 ```
 ### 3). 通过delete对象删除所有记录
 
 ```
-var categoryModel = new CategoryModel();
-var deleteOp = categoryModel.getOperateObj("delete");
+var deleteOp = CategoryModel.getOperateObj("delete");
 deleteOp.deleteAllById(callback);
 ```
 
