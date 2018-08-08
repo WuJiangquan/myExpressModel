@@ -32,15 +32,19 @@ var Update = function(connect , fields , tableName){
 		this.baseOp(sql,callback);
 	};
 	
+	
 	this.updateRecord = function(record,callback){
-		this.equalTo("id",record.id);
+		// this.equalTo("id",record.id);
 		this.doupdate(record,callback);
 	};
 	
 	
 	this.doupdate = function(record ,callBack){
-		var conditions = this.conditionsCollector( );
-		var sql = "update "+ tableName + " set " +  this.dataBaseUpdateSetCollector(record) + 'where' + conditions;
+		var conditions = this.conditionsCollector();
+		if("" === conditions){
+			conditions = this.getDefaultCondition(record);
+		}
+		var sql = "update "+ tableName + " set " +  this.dataBaseUpdateSetCollector(record) + 'where' + conditions + " ;";
 		this.baseOp(sql,callBack);
 	};
 	

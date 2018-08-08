@@ -20,6 +20,13 @@ var BaseDBOperation =function(connect,fields,tableName){
 	this.fields = fields;
 	this.tableName = tableName
 	
+	for(var pro in fields){
+		if(fields[pro].pk){
+			this.pk = pro;
+			break ;
+		}
+	}
+
 	var formatString = function(field,value){
 		
 		if('string' == field.type || "datetime" == field.type || "text" == field.type || "tinyText" == field.type || "longText" == field.type )
@@ -43,6 +50,15 @@ var BaseDBOperation =function(connect,fields,tableName){
 			me.conditions = "";
 		});
 	};
+
+
+	this.getDefaultCondition = (record)=>{
+		var condition = " ";
+		if(this.pk !== undefined){
+			condition += this.pk + " = " + record[this.pk];
+		}
+		return condition
+	}
 	
 	this.conditionsCollector = function(){
 		
@@ -53,7 +69,7 @@ var BaseDBOperation =function(connect,fields,tableName){
 				 this.conditions = this.likeStr;
 			}
 		}
-		return this.conditions;
+		return this.conditions ;
 	};
 	
 	/**
@@ -71,6 +87,33 @@ var BaseDBOperation =function(connect,fields,tableName){
 			return me.fields[field].mapping + " = " + value;
 		},logic);
 	};
+
+	this.equalToMtp = function(conditions,logic){
+		if( Object.prototype.toString.call(conditions) === '[object Array]'){
+			for(var i=0,len = conditions.length;i<len;i++){
+				var condition = conditions[i];
+				this.doCollectCondition(condition.key,condition.value,function(field,value){
+					return me.fields[field].mapping + " = " + value;
+				},condition.logic||logic);
+			}
+		}else{
+			for(var field in conditions){
+				var value = conditions[field];
+				this.doCollectCondition(field,value,function(field,value){
+					return me.fields[field].mapping + " = " + value;
+				},logic);
+			}
+		}
+	};
+
+	this.setConditions = function(conditions){
+		if("string" === typeof conditions){
+			this.conditions = conditions;
+		}
+		
+	}
+
+
 
 	this.notEqualTo = function(field,value,logic){
 		this.doCollectCondition(field,value,function(field,value){

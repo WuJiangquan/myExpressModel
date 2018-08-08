@@ -150,7 +150,7 @@ categoryModel.deleteByIds(1,callback);
 
 ```
 var categoryModel = new CategoryModel();
-var deleteOp = deleteByIds.getOperateObj("delete");
+var deleteOp = categoryModel.getOperateObj("delete");
 deleteOp.equalTo("name",'衣服');//更多的条件设置方法请看后面文档;
 deleteOp.delete(cllback);
 ```
@@ -158,7 +158,7 @@ deleteOp.delete(cllback);
 
 ```
 var categoryModel = new CategoryModel();
-var deleteOp = deleteByIds.getOperateObj("delete");
+var deleteOp = categoryModel.getOperateObj("delete");
 deleteOp.deleteAllById(callback);
 ```
 
