@@ -184,7 +184,7 @@ var BaseDBOperation =function(connect,fields,tableName){
 	this.fieldsCollector = function(record){
 		var fieldsstr = "";
 		for(var element in record){
-			if(!fields[element].generated){
+			if(fields[element]&&!fields[element].generated){
 				fieldsstr += fields[element].mapping + ',';
 			}
 		}
@@ -192,7 +192,9 @@ var BaseDBOperation =function(connect,fields,tableName){
 	};
 	
 	this.formatBataBaseSet = function(data,field){
-		data = data||field.defaultValue||'';
+		if(data === undefined || data === null){
+			data = field.defaultValue||'';
+		}
 		if('string' == field.type || 'text' == field.type || 'datetime' == field.type || "tinyText" == field.type || "longText" == field.type) {
 			return "'" + data + "'";
 		}else{

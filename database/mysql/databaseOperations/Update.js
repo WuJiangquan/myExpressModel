@@ -44,8 +44,14 @@ var Update = function(connect , fields , tableName){
 		if("" === conditions){
 			conditions = this.getDefaultCondition(record);
 		}
-		var sql = "update "+ tableName + " set " +  this.dataBaseUpdateSetCollector(record) + 'where' + conditions + " ;";
-		this.baseOp(sql,callBack);
+		let changeInfo = this.dataBaseUpdateSetCollector(record) ;
+		if(changeInfo){
+			var sql = "update "+ tableName + " set " + changeInfo + 'where' + conditions + " ;";
+			this.baseOp(sql,callBack);
+		}else{
+			callBack("","")
+		}
+	
 	};
 	
 	this.dataBaseUpdateSetCollector = function(record){

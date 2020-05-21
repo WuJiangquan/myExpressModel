@@ -35,8 +35,8 @@ class Model{
 		var newRecord = {};
 		for(var element in this.fields){
 			var mapping = this.fields[element].mapping || element;
-			if(record[element])
-				newRecord[mapping] = record[element] || "";
+			if(record[element] !== undefined)
+				newRecord[mapping] = record[element] === null? "" : record[element];
 		}
 		return newRecord;
 	}
@@ -166,7 +166,7 @@ class Model{
 			if("function" === typeof callback){
 				callback(errmsg,result)
 			}
-			resolve(errmsg,result);
+			resolve({errmsg,result});
 		}
 	}
 
@@ -195,6 +195,12 @@ class Model{
 			queryObj.find(this.resolveCallback(resolve,callback));
 		})
 	}
+
+	static getByIds (ids,callback){
+		return new Promise((resolve,errmsg)=>{
+			
+		})
+	}
 	
 	static deleteByIds (ids,callback){
 		return new Promise((resolve,errmsg)=>{
@@ -208,9 +214,6 @@ class Model{
 		})
 	}
 
-	deleteAll(){
-
-	}
 
 	static getOperateObj (operateType){
 		return dataBaseEngine.getOperations(operateType,this.fields,this.tableName);
@@ -249,7 +252,12 @@ class Model{
 			db.baseOp(sql,this.resolveCallback(resolve,callback));
 		})
 	};
-	
+
+	static opSqlSetament (sql,callBack){
+		return new Promise((resolve,reject)=>{
+			db.baseOp(sql,this.resolveCallback(resolve,callBack));
+		})
+	};
 }
 
 

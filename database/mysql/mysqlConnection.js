@@ -12,6 +12,7 @@ module.exports = function (config){
 			if (!err) {
 				console.log("mysql connected")
 			} else {
+				console.log(err)
 				console.log("mysql connection lost");
 				connectErr = true;
 			}

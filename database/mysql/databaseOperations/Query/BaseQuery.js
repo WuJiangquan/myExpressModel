@@ -40,15 +40,18 @@ var BaseQuery = function(connect,fields,tableName){
 	
 	
 	this.find = function(callback){
-		var sql = this.sqlCollector();
-		connect.query(sql,function(err, results){
-			if(callback){
-				callback(err, results);
-			}
-			me.conditions = "";
-		});
+		return new Promise((resolve)=>{
+			var sql = this.sqlCollector();
+			connect.query(sql,function(err, results){
+				if(callback){
+					callback(err, results);
+				}
+				me.conditions = "";
+				resolve({errmsg:err,result :results})
+			
+			});
+		})
 	};
-
 	
 };
 
