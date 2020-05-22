@@ -1,14 +1,14 @@
 var db = require('./database');
 var dataBaseEngine = null;
 class Model{
-	constructor(databaseConfig){
+	constructor(){
 		var me = this;
-		this.databaseConfig = databaseConfig;
+		// this.databaseConfig = databaseConfig;
 		// this.constructor.fields = fields;
 		// this.constructor.tableName = tableName;
 		this.pageNumber = 0;
 		this.pageSize = 30;
-		dataBaseEngine = db.getDataBaseEngine(this.databaseConfig);
+		// dataBaseEngine = db.getDataBaseEngine(this.databaseConfig);
 		this.initFields();
 	}
 	initFields  (){
@@ -31,6 +31,26 @@ class Model{
 		}
 		return newRecord;
 	}
+
+	static connect(databaseConfig,callback){
+		this.databaseConfig = databaseConfig;
+		return new Promise((resolve)=>{
+			dataBaseEngine = db.getDataBaseEngine(this.databaseConfig);
+			this.connection = dataBaseEngine.connect(function(connection,error){
+				if(!Model.connection){
+					Model.connection = connection;
+				}
+				"function" === typeof callback && callback(error);
+				resolve(error)
+			});
+		})
+	}
+
+	static disconnect(){
+		Model.connection.end();
+		Model.connection = null;
+	}
+
 	static mapRecord(record){
 		var newRecord = {};
 		for(var element in this.fields){
@@ -260,7 +280,7 @@ class Model{
 	};
 }
 
-
+Model.connection = null;
 	
 	
 
