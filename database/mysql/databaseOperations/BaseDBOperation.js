@@ -1,5 +1,5 @@
 
-var BaseDBOperation =function(connect,fields,tableName){
+var BaseDBOperation =function(connect,fields,tableName,pool){
 	var me = this;
 	var mysqlConnection = connect;
 	this.selectField = "";
@@ -8,7 +8,12 @@ var BaseDBOperation =function(connect,fields,tableName){
 	this.likeStr = "";
 	this.orderStr = "";
 	this.conditions  = "";
-
+	if(connect === undefined && pool !== undefined){
+		pool.getConnection((err, connection)=>{
+			connect = connection;
+			mysqlConnection = connection;
+		})
+	}
 	if(!fields){
 		throw new Error("you must set  parameter fields when you new a database operation object");
 	}

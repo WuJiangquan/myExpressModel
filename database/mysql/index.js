@@ -1,22 +1,40 @@
 var mysqlConnection = require('./mysqlConnection');
 
 var databaseOperateType = {
-	insert : require('./databaseOperations/Insert'),
-	update : require('./databaseOperations/Update'),
-	delete : require('./databaseOperations/Delete'),
-	query : require("./databaseOperations/Query/Query")
+	insert: require('./databaseOperations/Insert'),
+	update: require('./databaseOperations/Update'),
+	delete: require('./databaseOperations/Delete'),
+	query: require("./databaseOperations/Query/Query")
 }
 
-module.exports = function(config){
-	// var connect = mysqlConnection(config);
-	this.getOperations = function(opType , fields ,tableName){
-		return new databaseOperateType[opType](this.connection , fields ,tableName);
+class Mysql {
+	constructor(config) {
+		this.config = config;
+		this.connectCreater = mysqlConnection
 	}
-	this.connect = function(callback){
-		var me = this;
-		this.connection =  mysqlConnection(config,function(connect,err){
-			callback(connect,err);
-			this.connection = connect;
-		});
+
+	getOperations(opType, fields, tableName, connection,pool) {
+		return new databaseOperateType[opType](connection, fields, tableName);
+	}
+
+	createConnection() {
+		return mysqlConnection.createConnection(this.config);
+	}
+
+	createPool() {
+		return mysqlConnection.createPool(this.config);
+	}
+
+	connect(connection){
+		return mysqlConnection.connect(connection);
+	}
+	baseOp(sqlSetence,connect,callback){
+		connect.query(sqlSetence,function(	error, results, fields){
+		  typeof callback === "function" && callback(	error, results, fields)
+		})
+		connect.end();
 	}
 }
+
+
+module.exports = Mysql;
