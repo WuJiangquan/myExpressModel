@@ -51,8 +51,8 @@ var BaseDBOperation =function(connect,fields,tableName,pool){
 	
 	this.baseOp = function(sql,callBack){
 		mysqlConnection.query(sql, function(err, results){
-			callBack(err, results);
 			me.conditions = "";
+			callBack(err, results);
 		});
 	};
 

@@ -120,7 +120,7 @@ class Model {
 							callback(err, results)
 						}
 						this.pool && connection.end();
-						resolve(err, results);
+						resolve({errmsg:err, results});
 					} else {
 						if (results.length > 0) {
 							if ("function" === typeof callback) {

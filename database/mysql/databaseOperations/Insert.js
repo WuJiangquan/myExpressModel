@@ -18,8 +18,13 @@ var Insert = function(connect , fields , tableName){
 	};
 	
 	this.insert = function(record,callback){
-		var sql = "INSERT INTO "+ tableName + " (" + this.fieldsCollector(record) + ") values (" + this.dataBaseInsertSetCollector(fields,record) +")";
-		this.baseOp(sql,callback);
+		return new Promise((resolve) => {
+			var sql = "INSERT INTO "+ tableName + " (" + this.fieldsCollector(record) + ") values (" + this.dataBaseInsertSetCollector(fields,record) +")";
+			this.baseOp(sql,function(errmsg,result){
+				callback(errmsg,result);
+				resolve({errmsg,result})
+			});
+		})
 	};
 	
 	this.dataBaseInsertSetCollector = function(fields , record){
@@ -33,14 +38,18 @@ var Insert = function(connect , fields , tableName){
 	
 	
 	this.batchInsert = function(records,callback){
-		
-		var set = "";
-		for(var i =0;i<records.length;i++){
-			set += ' ( '+ this.dataBaseInsertSetCollector(fields,records[i]) + '),';
-		}
-		set = set.slice(0,-1);
-		var sql = "INSERT INTO "+ tableName + " (" + this.fieldsCollector(records[0]) + ") values " + set +"";
-		this.baseOp(sql,callback);
+		 return new Promise((resolve)=>{
+				var set = "";
+				for(var i =0;i<records.length;i++){
+					set += ' ( '+ this.dataBaseInsertSetCollector(fields,records[i]) + '),';
+				}
+				set = set.slice(0,-1);
+				var sql = "INSERT INTO "+ tableName + " (" + this.fieldsCollector(records[0]) + ") values " + set +"";
+				this.baseOp(sql,function(err,result){
+					callback(err,result);
+					resolve({errmsg:err,result});
+				});
+		 })
 	};
 };
 
