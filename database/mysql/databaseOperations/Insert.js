@@ -26,6 +26,26 @@ var Insert = function(connect , fields , tableName){
 			});
 		})
 	};
+
+	this.insertIgnore = function(record,callback){
+		return new Promise((resolve) => {
+			var sql = "INSERT IGNORE INTO "+ tableName + " (" + this.fieldsCollector(record) + ") values (" + this.dataBaseInsertSetCollector(fields,record) +")";
+			this.baseOp(sql,function(errmsg,result){
+				callback(errmsg,result);
+				resolve({errmsg,result})
+			});
+		})
+	}
+
+	this.insertReplace = function(record,callback){
+		return new Promise((resolve) => {
+			var sql = "REPLACE INTO "+ tableName + " (" + this.fieldsCollector(record) + ") values (" + this.dataBaseInsertSetCollector(fields,record) +")";
+			this.baseOp(sql,function(errmsg,result){
+				callback(errmsg,result);
+				resolve({errmsg,result})
+			});
+		})
+	}
 	
 	this.dataBaseInsertSetCollector = function(fields , record){
 		var set = "";

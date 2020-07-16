@@ -4,9 +4,10 @@ var BaseQuery = function(connect,fields,tableName){
 	var me = this;
 	this.setSelectFields = function(fields){
 		fields = [].concat(fields);
+		var mappingFields = this.getMappingFiels(fields);
 		var  selectField = "";
-		for(var i =0,len = fields.length;i<len;i++){
-			selectField += " " + fields[i] + " ,";
+		for(var i =0,len = mappingFields.length;i<len;i++){
+			selectField += " " + mappingFields[i] + " ,";
 		};
 		
 		
@@ -40,15 +41,17 @@ var BaseQuery = function(connect,fields,tableName){
 	
 	
 	this.find = function(callback){
-		return new Promise((resolve)=>{
+		return new Promise((resolve,reject)=>{
 			var sql = this.sqlCollector();
 			connect.query(sql,function(err, results){
 				if(callback){
 					callback(err, results);
 				}
 				me.conditions = "";
-				resolve({errmsg:err,result :results})
-			
+				if(err){
+					reject(err);
+				}
+				resolve(results)
 			});
 		})
 	};

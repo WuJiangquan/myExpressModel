@@ -10,6 +10,8 @@ var databaseOperateType = {
 class Mysql {
 	constructor(config) {
 		this.config = config;
+		this.constructor.databaseConfig = config;
+		this.constructor.databaseName = config.databaseName;
 		this.connectCreater = mysqlConnection
 	}
 

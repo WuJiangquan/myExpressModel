@@ -52,8 +52,15 @@ var BaseDBOperation =function(connect,fields,tableName,pool){
 	this.baseOp = function(sql,callBack){
 		mysqlConnection.query(sql, function(err, results){
 			me.conditions = "";
+			try{
+
+				mysqlConnection.release();
+			}catch(e){
+				callBack(e, results);
+			}
 			callBack(err, results);
 		});
+	
 	};
 
 
@@ -89,7 +96,7 @@ var BaseDBOperation =function(connect,fields,tableName,pool){
 
 	this.equalTo = function(field,value,logic){
 		this.doCollectCondition(field,value,function(field,value){
-			return me.fields[field].mapping + " = " + value;
+			return (me.fields[field].mapping||field) + " = " + value;
 		},logic);
 	};
 
@@ -190,12 +197,26 @@ var BaseDBOperation =function(connect,fields,tableName,pool){
 		var fieldsstr = "";
 		for(var element in record){
 			if(fields[element]&&!fields[element].generated){
-				fieldsstr += fields[element].mapping + ',';
+				fieldsstr += (fields[element].mapping||element) + ',';
 			}
 		}
 		return  fieldsstr.slice(0,-1) ;
 	};
 	
+
+	this.getMappingFiels = function(fields){
+		 let mappings = [];
+		 for(let i =0;i<fields.length;i++){
+				let fieldsName = fields[i];
+				if(this.fields[fieldsName] && this.fields[fieldsName].mapping){
+					mappings.push(this.fields[fieldsName].mapping + " as " + fieldsName);
+				}else{
+					mappings.push(fieldsName);
+				}
+		 }
+		 return mappings;
+	}
+
 	this.formatBataBaseSet = function(data,field){
 		if(data === undefined || data === null){
 			data = field.defaultValue||'';

@@ -54,11 +54,11 @@ var Update = function (connect, fields, tableName) {
 			if (changeInfo) {
 				var sql = "update " + tableName + " set " + changeInfo + 'where' + conditions + " ;";
 				this.baseOp(sql, function (errmsg, result) {
-					callback(errmsg, result)
+					typeof callBack == "function" && callBack(errmsg, result)
 					resolve({ errmsg, result })
 				});
 			} else {
-				callBack("", record)
+				typeof callBack == "function"  && callBack("", record)
 				resolve({ errmsg: "", result: record })
 			}
 		})
