@@ -24,6 +24,7 @@ class Mysql {
 	}
 
 	createPool() {
+		console.log(this.config)
 		return mysqlConnection.createPool(this.config);
 	}
 

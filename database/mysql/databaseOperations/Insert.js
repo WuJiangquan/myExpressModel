@@ -46,12 +46,15 @@ var Insert = function(connect , fields , tableName){
 			});
 		})
 	}
+
+
 	
 	this.dataBaseInsertSetCollector = function(fields , record){
 		var set = "";
+		var newfields = this.getInsertMapFields(fields);
 		for(var element in record){//浅度操作，如果record的数据中某个数据是一个对象则需要进一步完善；
-			if(fields[element]&& !fields[element].generated)
-				set += ' ' + this.formatBataBaseSet(record[element],fields[element]) + " ,";
+			if(newfields[element]&& !newfields[element].generated)
+				set += ' ' + this.formatBataBaseSet(record[element],newfields[element]) + " ,";
 		}
 		return  set.slice(0,-1) ;
 	};

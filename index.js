@@ -1,17 +1,35 @@
 var db = require('./database');
-var dataBaseEngine = null;
+var dataBaseEngines = {
+	getDataBase(databaseName){
+		 if(databaseName){
+			 return this[databaseName];
+		 }else{
+			 for(let pro in this){
+				 	if(pro !== "get"){
+						 return this[pro];
+					 }
+			 }
+		 }
+	}
+};
 class Model {
+
 	constructor(databaseConfig) {
 		var me = this;
 		this.databaseConfig = databaseConfig;
 		this.pageNumber = 0;
 		this.pageSize = 30;
-		dataBaseEngine = db.getDataBaseEngine(databaseConfig);
+		if(undefined !== databaseConfig && typeof databaseConfig === "object"){
+			dataBaseEngines[databaseConfig.databaseName] = db.getDataBaseEngine(databaseConfig);
+		}
 		if (databaseConfig.connectType == "pool") {
-			this.pool = dataBaseEngine.createPool(databaseConfig);
+			this.pool = dataBaseEngines[databaseConfig.databaseName].pool  || dataBaseEngines[databaseConfig.databaseName] .createPool(databaseConfig);
 		} else {
 			this.pool = null;
 		}
+		dataBaseEngines[databaseConfig.databaseName].pool  = this.pool
+		this.constructor.databaseConfig = databaseConfig;
+		this.constructor.dataBaseName = 	this.constructor.dataBaseName || databaseConfig.databaseName;
 		this.initFields();
 	}
 	initFields() {
@@ -159,7 +177,46 @@ class Model {
 			var insertObj = await this.getOperateObj("insert", connection);
 			insertObj.insert(mappingRecord, this.resolveCallback(resolve, callback))
 		})
+	}
 
+	static insertIgnore(record, connection, callback){
+		return new Promise(async (resolve, reject) => {
+			try {
+				if ("function" === typeof connection || undefined == connection) {
+					callback = connection;
+					if (this.pool !== null) {
+						connection = await this.connect(this.pool)
+					} else {
+						throw new Error("you should create connection before opera mysql");
+					}
+				}
+			} catch (error) {
+				reject(error);
+			}
+			var mappingRecord = this.mapRecord(record);
+			var insertObj = await this.getOperateObj("insert", connection);
+			insertObj.insertIgnore(mappingRecord, this.resolveCallback(resolve, callback))
+		})
+	}
+
+	static insertReplace(record, connection, callback){
+		return new Promise(async (resolve, reject) => {
+			try {
+				if ("function" === typeof connection || undefined == connection) {
+					callback = connection;
+					if (this.pool !== null) {
+						connection = await this.connect(this.pool)
+					} else {
+						throw new Error("you should create connection before opera mysql");
+					}
+				}
+			} catch (error) {
+				reject(error);
+			}
+			var mappingRecord = this.mapRecord(record);
+			var insertObj = await this.getOperateObj("insert", connection);
+			insertObj.insertReplace(mappingRecord, this.resolveCallback(resolve, callback))
+		})
 	}
 
 	static updateRecord(record, connection, callback) {
@@ -311,7 +368,7 @@ class Model {
 		if (undefined == connection && this.pool !== null) {
 			connection = await this.connect(this.pool)
 		} 
-		return dataBaseEngine.getOperations(operateType, this.fields, this.tableName, connection,this.pool);
+		return dataBaseEngines.getDataBase(this.dataBaseName).getOperations(operateType, this.fields, this.tableName, connection,this.pool);
 	}
 
 	parseDataStr(dataStr) {
@@ -375,27 +432,31 @@ class Model {
 			} catch (error) {
 				reject(error);
 			}
-			return dataBaseEngine.baseOp(sql,connection ,this.resolveCallback(resolve, callBack));
+			return dataBaseEngines[this.dataBaseName].baseOp(sql,connection ,this.resolveCallback(resolve, callBack));
 		})
 	};
 
 	static createConnection(config) {
-		if (dataBaseEngine == null) {
-			dataBaseEngine = db.getDataBaseEngine(config);
+		let dataBaseName = this.dataBaseName || config.databaseName;
+		this.dataBaseName = dataBaseName;
+		if (dataBaseEngines[this.dataBaseName] == undefined) {
+			dataBaseEngines[this.dataBaseName]  = db.getDataBaseEngine(config);
 		}
-		return dataBaseEngine.createConnection();
+		return dataBaseEngines[this.dataBaseName].createConnection();
 	}
 
 	static createPool(config) {
-		if (dataBaseEngine == null) {
-			dataBaseEngine = db.getDataBaseEngine(config);
+		let dataBaseName = this.dataBaseName || config.databaseName;
+		this.dataBaseName = dataBaseName;
+		if (dataBaseEngines[dataBaseName] == undefined) {
+			dataBaseEngines[dataBaseName] = db.getDataBaseEngine(config);
 		}
-		this.pool = dataBaseEngine.createPool();
+		this.pool = dataBaseEngines[this.dataBaseName] .createPool();
 		return this.pool;
 	}
 
 	static connect(connection) {
-		return dataBaseEngine.connect(connection);
+		return dataBaseEngines[this.dataBaseName].connect(connection);
 	}
 }
 

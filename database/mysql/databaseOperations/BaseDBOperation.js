@@ -195,14 +195,25 @@ var BaseDBOperation =function(connect,fields,tableName,pool){
 	
 	this.fieldsCollector = function(record){
 		var fieldsstr = "";
+		var mappingFileds = this.getInsertMapFields(fields);
 		for(var element in record){
-			if(fields[element]&&!fields[element].generated){
-				fieldsstr += (fields[element].mapping||element) + ',';
+			if(mappingFileds[element]&&!mappingFileds[element].generated){
+				fieldsstr += element + ',';
 			}
 		}
 		return  fieldsstr.slice(0,-1) ;
 	};
 	
+	this.getInsertMapFields = function(fields){
+		var res = {};
+		for(var pro in fields){
+			var mapping = fields[pro].mapping || pro;
+			res[mapping] = {...fields[pro]};
+			res[mapping].mapping = pro;
+		}
+		return res;
+	}
+
 
 	this.getMappingFiels = function(fields){
 		 let mappings = [];
