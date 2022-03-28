@@ -132,7 +132,7 @@ class Model {
 			}
 			var record = this.collectRecord();
 			if (record.id) {
-				this.constructor.get(this.getDefaultCondition(record), connection, (err, results) => {
+				this.constructor.get(this.getDefaultCondition(record), connection, async (err, results) => {
 					if (err) {
 						if ("function" === typeof callback) {
 							callback(err, results)
@@ -140,20 +140,19 @@ class Model {
 						this.pool && connection.end();
 						resolve({errmsg:err, results});
 					} else {
+						connection = await this.constructor.connect(this.pool)
 						if (results.length > 0) {
 							if ("function" === typeof callback) {
 								callback(err, results)
 							}
-							this.constructor.updateRecord(record, connection, this.constructor.resolveCallback(resolve, callback));
+							await this.constructor.updateRecord(record, connection, this.constructor.resolveCallback(resolve, callback));
 						} else {
-							this.constructor.insertRecord(record, connection, this.constructor.resolveCallback(resolve, callback));
+							await this.constructor.insertRecord(record, connection, this.constructor.resolveCallback(resolve, callback));
 						}
-						this.pool && connection.end();
 					}
 				});
 			} else {
-				this.constructor.insertRecord(record, connection, this.constructor.resolveCallback(resolve, callback));
-				this.pool && connection.end();
+				await this.constructor.insertRecord(record, connection, this.constructor.resolveCallback(resolve, callback));
 			}
 		})
 

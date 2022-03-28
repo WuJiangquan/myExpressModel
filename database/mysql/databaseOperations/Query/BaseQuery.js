@@ -52,6 +52,7 @@ var BaseQuery = function(connect,fields,tableName){
 					reject(err);
 				}
 				resolve(results)
+				connect.release()
 			});
 		})
 	};
