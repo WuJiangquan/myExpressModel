@@ -35,7 +35,7 @@ class Mysql {
 		connect.query(sqlSetence,function(	error, results, fields){
 		  typeof callback === "function" && callback(	error, results, fields)
 		})
-		connect.end();
+		connect.release();
 	}
 }
 
