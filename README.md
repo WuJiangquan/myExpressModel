@@ -104,7 +104,7 @@ import Model from xxxx;
    // Promise  的异步操作可以通过catch 来捕获，async await 只能通过try catch 来捕获 
   const insertOp = Model.getOperateObj("insert",connection);   
   //todo 
-  connection.end()//或者connection.detroy();
+  connection.release();
 }   
 ```
 
