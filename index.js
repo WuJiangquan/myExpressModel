@@ -137,7 +137,7 @@ class Model {
 						if ("function" === typeof callback) {
 							callback(err, results)
 						}
-						this.pool && connection.end();
+						this.pool && connection.release();
 						resolve({errmsg:err, results});
 					} else {
 						connection = await this.constructor.connect(this.pool)
